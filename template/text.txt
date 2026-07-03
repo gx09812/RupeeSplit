@@ -1,0 +1,1934 @@
+/* --- GLOBAL RESET & VARIABLES --- */
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --success: #22c55e;
+  --warning: #eab308;
+  --danger: #ef4444;
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --radius: 12px;
+  --transition: all 0.25s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding-bottom: 60px; 
+}
+
+/* --- NAVBAR & TABS SYSTEM --- */
+.navbar {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 1rem;
+}
+
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  text-align: center;
+  padding: 1rem 0 0.5rem 0;
+}
+
+.nav-logo span {
+  color: var(--text-main);
+}
+
+.nav-links {
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 24px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: var(--transition);
+}
+
+.nav-tab:hover {
+  color: var(--primary);
+}
+
+.nav-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/*  MAIN PANEL CONTROLLERS */
+.main-content {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.view-panel {
+  display: none;
+}
+
+.view-panel.active-view {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gallery-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.pad {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: var(--transition);
+}
+
+.pad:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.imagebox {
+  width: 100%;
+  height: 160px;
+  border-radius: calc(var(--radius) - 4px);
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.imagebox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pad h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.pad h3 span {
+  color: var(--primary);
+}
+
+.send-vault-to-splitter {
+  display: block;
+  text-align: center;
+  background: #edf2f7;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.send-vault-to-splitter:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.add-box {
+  border: 2px dashed #cbd5e1;
+  background: transparent;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  min-height: 260px;
+}
+
+.add-box:hover {
+  border-color: var(--primary);
+  background: var(--bg-card);
+}
+
+.plus-icon {
+  font-size: 3rem;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+/*CALCULATOR */
+.calc-wrapper {
+  max-width: 360px;
+  margin: 0 auto;
+  background: #0f172a; 
+  padding: 1.5rem;
+  border-radius: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.display-panel {
+  background: transparent; 
+  padding: 2rem 0.5rem 1rem 0.5rem;
+  text-align: right;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  word-wrap: break-word;
+  word-break: break-all; 
+  overflow: hidden;
+}
+
+.formula-line {
+  color: #64748b;
+  font-size: 1.25rem;
+  min-height: 1.75rem;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  width: 100%;
+  white-space: normal; 
+}
+
+.output-line {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: clamp(2.5rem, 8vw, 4rem); 
+  font-weight: 500;
+  text-align: right;
+  outline: none;
+  line-height: 1.1;
+  padding: 0;
+}
+
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.keypad-grid button {
+  border: none;
+  background: #334155;
+  color: #f8fafc;
+  font-size: 1.6rem;
+  font-weight: 500;
+  aspect-ratio: 1 / 1; 
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.keypad-grid button:active {
+  transform: scale(0.92);
+  background: #475569;
+}
+
+.keypad-grid button.utility-key {
+  background: #475569;
+  color: #f8fafc;
+}
+
+.keypad-grid button.utility-key:active {
+  background: #64748b;
+}
+
+.keypad-grid button.operator-key {
+  background: #f97316;
+  color: white;
+}
+
+.keypad-grid button.operator-key:active {
+  background: #ea580c;
+}
+
+.keypad-grid button.execution-key {
+  background: var(--primary);
+}
+
+#calc-to-splitter-btn {
+  background: #10b981;
+  color: white;
+  border-radius: 24px; 
+  aspect-ratio: auto;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+#calc-to-splitter-btn:hover {
+  background: #059669;
+}
+
+#calc-to-splitter-btn:active {
+  background: #059669;
+}
+
+.splitter-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.splitter-form, .splitter-result {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.splitter-form h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+input[type="text"]:focus, input[type="number"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+button[type="button"] {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button[type="button"]:hover {
+  background: var(--primary-hover);
+}
+
+.result-card h1 {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-top: 5px;
+}
+
+/* --- MODAL SYSTEM --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 200;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  padding: 2rem;
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: scale(0.95);
+  transition: var(--transition);
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-content h2 {
+  margin-bottom: 1.25rem;
+  font-size: 1.3rem;
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: var(--text-muted);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+@media (min-width: 768px) {
+  .splitter-container {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Dynamic view configurations to enable app containment breakout */
+  body:has(#calculator-view.active-view) {
+    background-color: #0f172a;
+  }
+
+  .main-content:has(.calc-wrapper) {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100vw !important;
+  }
+
+  .calc-wrapper {
+    max-width: 100vw;
+    height: calc(100vh - 70px);
+    border-radius: 0;
+    padding: 1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom)) 1.25rem;
+    justify-content: flex-end;
+    box-shadow: none;
+  }
+
+  .display-panel {
+    flex-grow: 1;
+    min-height: 220px; /* Significantly increased height to hold complex continuous lines */
+    padding-top: 3.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .output-line {
+    font-size: clamp(2.5rem, 11vw, 3.75rem); /* Extra scaling ceiling on phones */
+  }
+
+  .keypad-grid {
+    gap: 16px;
+    padding-bottom: 1rem;
+  }
+}
+
+js 
+
+const tabs = document.querySelectorAll('.nav-tab');
+const views = document.querySelectorAll('.view-panel');
+const gallery = document.getElementById('gallery');
+const addBtn = document.getElementById('addBtn');
+const formModal = document.getElementById('formModal');
+const cancelModalBtn = document.getElementById('cancelModalBtn');
+const galleryForm = document.getElementById('galleryForm');
+const fileInput = document.getElementById('fileInput');
+const fileLabel = document.getElementById('fileLabel');
+
+const calcScreen = document.getElementById('calc-screen');
+const formulaCache = document.getElementById('formula-cache');
+const calcToSplitterBtn = document.getElementById('calc-to-splitter-btn');
+
+const splitTotalInput = document.getElementById('split-total');
+const personNameInput = document.getElementById('person-name');
+const personUpiInput = document.getElementById('person-upi');
+const addPersonBtn = document.getElementById('add-person-btn');
+const namesDisplayList = document.getElementById('names-display-list');
+const itemTitleInput = document.getElementById('shopping-item-title');
+const itemCostInput = document.getElementById('shopping-item-cost');
+const addItemBtn = document.getElementById('add-item-btn');
+const itemsBreakdownList = document.getElementById('items-breakdown-list');
+const perHeadSharesDisplay = document.getElementById('per-head-shares');
+const upiLinksContainer = document.getElementById('upi-links-container');
+
+let currentFormula = "";
+let peopleList = []; // Array of objects: { id, name, upi, manualAmount, mode: 'auto'|'manual' }
+let itemsList = [];   // Array of objects: { title, cost }
+
+// 1. VIEWS NAVIGATION CONTROLLER
+tabs.forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = tab.getAttribute('data-target');
+    
+    tabs.forEach(t => t.classList.remove('active'));
+    views.forEach(v => v.classList.remove('active-view'));
+    
+    tab.classList.add('active');
+    document.getElementById(target).classList.add('active-view');
+  });
+});
+
+//2. RECEIPT VAULT MODULE
+addBtn.addEventListener('click', () => formModal.classList.add('active'));
+cancelModalBtn.addEventListener('click', () => {
+  formModal.classList.remove('active');
+  galleryForm.reset();
+  fileLabel.innerHTML = `<span class="material-symbols-outlined">upload</span> Snap / Select Bill Photo`;
+});
+
+fileInput.addEventListener('change', () => {
+  if(fileInput.files.length > 0) {
+    fileLabel.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${fileInput.files[0].name}`;
+  }
+});
+
+galleryForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const storeName = document.getElementById('modalItemName').value;
+  const billCost = document.getElementById('modalItemPrice').value;
+  
+  const file = fileInput.files[0];
+  let imageSrc = "https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?q=80&w=400"; // default placeholder
+  
+  if (file) {
+    imageSrc = URL.createObjectURL(file);
+  }
+
+  const newPad = document.createElement('div');
+  newPad.className = 'pad';
+  newPad.innerHTML = `
+    <div class="imagebox">
+      <img src="${imageSrc}" alt="${storeName}" />
+    </div>
+    <h3>${storeName}</h3>
+    <h3>₹ <span>${parseFloat(billCost).toLocaleString('en-IN')}</span></h3>
+    <a href="#" class="send-vault-to-splitter" data-amount="${billCost}">Split This Bill</a>
+  `;
+
+  gallery.insertBefore(newPad, addBtn);
+  
+  cancelModalBtn.click();
+});
+
+gallery.addEventListener('click', (e) => {
+  if(e.target.classList.contains('send-vault-to-splitter')) {
+    e.preventDefault();
+    const targetAmount = e.target.getAttribute('data-amount');
+    transferToSplitter(targetAmount);
+  }
+});
+
+
+//  CALCULATOR 
+function registerInput(val) {
+  if (calcScreen.value === "0" && val !== ".") {
+    calcScreen.value = val;
+  } else {
+    calcScreen.value += val;
+  }
+  currentFormula += val;
+}
+
+function flushEngine() {
+  calcScreen.value = "0";
+  formulaCache.innerText = "";
+  currentFormula = "";
+}
+
+function popLastEntry() {
+  if(calcScreen.value.length > 1) {
+    calcScreen.value = calcScreen.value.slice(0, -1);
+  } else {
+    calcScreen.value = "0";
+  }
+}
+
+function applyPercentage() {
+  try {
+    let expression = calcScreen.value;
+    let calculated = eval(expression.replace(/×/g, '*').replace(/÷/g, '/')) / 100;
+    calcScreen.value = calculated;
+  } catch(err) {
+    calcScreen.value = "Error";
+  }
+}
+
+function executeEvaluation() {
+  try {
+    let mathExpression = calcScreen.value;
+    mathExpression = mathExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+    formulaCache.innerText = calcScreen.value + " =";
+    let finalOutput = eval(mathExpression);
+    calcScreen.value = Number(finalOutput.toFixed(2));
+  } catch (error) {
+    calcScreen.value = "Error";
+  }
+}
+
+calcToSplitterBtn.addEventListener('click', () => {
+  executeEvaluation();
+  const calculatedTotal = calcScreen.value;
+  if(calculatedTotal !== "Error" && parseFloat(calculatedTotal) > 0) {
+    transferToSplitter(calculatedTotal);
+  }
+});
+
+function transferToSplitter(amount) {
+  splitTotalInput.value = parseFloat(amount);
+  const targetTab = document.querySelector('[data-target="splitter-view"]');
+  if(targetTab) targetTab.click();
+  calculateSplit();
+}
+
+
+
+splitTotalInput.addEventListener('input', calculateSplit);
+
+addPersonBtn.addEventListener('click', () => {
+  const name = personNameInput.value.trim();
+  const upi = personUpiInput.value.trim() || "example@upi"; // fallback
+  
+  if(!name) {
+    alert("Please enter a person's name.");
+    return;
+  }
+
+  const person = {
+    id: Date.now() + Math.random(),
+    name: name,
+    upi: upi,
+    manualAmount: 0,
+    mode: 'auto' 
+  };
+
+  peopleList.push(person);
+  personNameInput.value = "";
+  personUpiInput.value = "";
+  
+  renderPeopleList();
+  calculateSplit();
+});
+
+addItemBtn.addEventListener('click', () => {
+  const title = itemTitleInput.value.trim();
+  const cost = parseFloat(itemCostInput.value);
+
+  if(!title || isNaN(cost) || cost <= 0) {
+    alert("Please enter a valid shopping item name and price.");
+    return;
+  }
+
+  itemsList.push({ title, cost });
+  
+  let currentlySetTotal = parseFloat(splitTotalInput.value) || 0;
+  splitTotalInput.value = currentlySetTotal + cost;
+
+  itemTitleInput.value = "";
+  itemCostInput.value = "";
+
+  renderItemsList();
+  calculateSplit();
+});
+
+function renderPeopleList() {
+  namesDisplayList.innerHTML = "";
+  
+  peopleList.forEach(person => {
+    const li = document.createElement('li');
+    li.style.display = "flex";
+    li.style.alignItems = "center";
+    li.style.justifyContent = "space-between";
+    li.style.background = "#f4f4f5";
+    li.style.padding = "8px 12px";
+    li.style.borderRadius = "6px";
+    li.style.marginBottom = "5px";
+
+    const nameSpan = document.createElement('span');
+    nameSpan.innerHTML = `<strong>${person.name}</strong> <small style="color:#666;">(${person.upi})</small>`;
+
+    const controllerDiv = document.createElement('div');
+    controllerDiv.style.display = "flex";
+    controllerDiv.style.alignItems = "center";
+    controllerDiv.style.gap = "8px";
+
+    const modeBtn = document.createElement('button');
+    modeBtn.type = "button";
+    modeBtn.innerText = person.mode === 'auto' ? "Auto Split" : "Manual Split";
+    modeBtn.style.fontSize = "0.75rem";
+    modeBtn.style.padding = "4px 8px";
+    modeBtn.style.background = person.mode === 'auto' ? "#22c55e" : "#eab308";
+    modeBtn.style.color = "white";
+    modeBtn.style.border = "none";
+    modeBtn.style.borderRadius = "4px";
+    modeBtn.style.cursor = "pointer";
+    
+    const manualInput = document.createElement('input');
+    manualInput.type = "number";
+    manualInput.placeholder = "₹ Box";
+    manualInput.value = person.manualAmount || "";
+    manualInput.style.width = "70px";
+    manualInput.style.padding = "2px 4px";
+    manualInput.style.display = person.mode === 'manual' ? "block" : "none";
+
+    const delBtn = document.createElement('button');
+    delBtn.innerHTML = "&times;";
+    delBtn.style.background = "none";
+    delBtn.style.color = "red";
+    delBtn.style.border = "none";
+    delBtn.style.fontWeight = "bold";
+    delBtn.style.cursor = "pointer";
+    delBtn.style.fontSize = "1.2rem";
+
+    modeBtn.addEventListener('click', () => {
+      person.mode = person.mode === 'auto' ? 'manual' : 'auto';
+      renderPeopleList();
+      calculateSplit();
+    });
+
+    manualInput.addEventListener('input', (e) => {
+      person.manualAmount = parseFloat(e.target.value) || 0;
+      calculateSplit();
+    });
+
+    delBtn.addEventListener('click', () => {
+      peopleList = peopleList.filter(p => p.id !== person.id);
+      renderPeopleList();
+      calculateSplit();
+    });
+
+    controllerDiv.appendChild(modeBtn);
+    controllerDiv.appendChild(manualInput);
+    controllerDiv.appendChild(delBtn);
+    
+    li.appendChild(nameSpan);
+    li.appendChild(controllerDiv);
+    namesDisplayList.appendChild(li);
+  });
+}
+
+function renderItemsList() {
+  itemsBreakdownList.innerHTML = "";
+  itemsList.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${item.title}</span> — <strong>₹${item.cost.toFixed(2)}</strong>`;
+    itemsBreakdownList.appendChild(li);
+  });
+}
+
+function calculateSplit() {
+  const baseTotal = parseFloat(splitTotalInput.value) || 0;
+  
+  if (peopleList.length === 0) {
+    perHeadSharesDisplay.innerText = "0.00";
+    upiLinksContainer.innerHTML = '<p style="font-size:0.9rem; color:#777;">Add group names or items to view payment shortcuts.</p>';
+    return;
+  }
+
+  let manualTotal = 0;
+  let autoCount = 0;
+
+  peopleList.forEach(p => {
+    if (p.mode === 'manual') {
+      manualTotal += p.manualAmount;
+    } else {
+      autoCount++;
+    }
+  });
+
+  let remainingPool = baseTotal - manualTotal;
+  if(remainingPool < 0) remainingPool = 0; 
+
+  let autoSharePerHead = autoCount > 0 ? (remainingPool / autoCount) : 0;
+  
+  perHeadSharesDisplay.innerText = autoSharePerHead > 0 ? autoSharePerHead.toFixed(2) : (baseTotal / peopleList.length).toFixed(2);
+
+  upiLinksContainer.innerHTML = "";
+
+  peopleList.forEach(p => {
+    const shareAmount = p.mode === 'manual' ? p.manualAmount : autoSharePerHead;
+    
+    if (shareAmount > 0) {
+      const linkRow = document.createElement('div');
+      linkRow.style.display = "flex";
+      linkRow.style.justifyContent = "space-between";
+      linkRow.style.alignItems = "center";
+      linkRow.style.background = "#fff";
+      linkRow.style.border = "1px solid #eee";
+      linkRow.style.padding = "10px";
+      linkRow.style.borderRadius = "6px";
+      linkRow.style.marginBottom = "8px";
+
+      const infoText = document.createElement('span');
+      infoText.innerHTML = `🏁 <strong>${p.name}</strong> owes <strong>₹${shareAmount.toFixed(2)}</strong>`;
+
+
+      const upiString = `upi://pay?pa=${encodeURIComponent(p.upi)}&pn=${encodeURIComponent(p.name)}&am=${shareAmount.toFixed(2)}&cu=INR&tn=RupeeSplit%20Settle`;
+
+      const actionBtn = document.createElement('a');
+      actionBtn.href = upiString;
+      actionBtn.className = "send-money-btn";
+      actionBtn.innerText = "Send Pay Link";
+      actionBtn.style.textDecoration = "none";
+      actionBtn.style.background = "#4f46e5";
+      actionBtn.style.color = "white";
+      actionBtn.style.padding = "6px 12px";
+      actionBtn.style.borderRadius = "4px";
+      actionBtn.style.fontSize = "0.85rem";
+      actionBtn.style.fontWeight = "bold";
+
+      linkRow.appendChild(infoText);
+      linkRow.appendChild(actionBtn);
+      upiLinksContainer.appendChild(linkRow);
+    }
+  });
+}
+
+
+
+/*CSS VARIABLES & BASE RESETS (via templatemo.com)*/
+:root {
+  --bg-color: #0b0712;             /* Deep Obsidian Midnight */
+  --card-bg: #161124;              /* Deep Amethyst-Charcoal */
+  --text-color: #fcfaf0;           /* Soft White Cream */
+  --text-muted: #9fa0b7;           /* Cool Muted Slate-Lavender */
+  --accent-color: #ec4899;         /* Vibrant Rose Gold / Crimson Rose */
+  --accent-hover: #db2777;         /* Deep Radiant Orchid */
+  --border-dashed: #3b2e53;        /* Subdued Violet Border */
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --card-hover-shadow: 0 10px 20px -3px rgba(236, 72, 153, 0.15); 
+  --card-border: 1px solid rgba(255, 255, 255, 0.04);
+
+  --border-radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+}
+
+/* NAVIGATION BAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--card-bg);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: var(--card-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav-logo {
+  color: var(--text-color);
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nav-logo span {
+  color: var(--accent-color);
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 1.75rem;
+}
+
+.nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.nav-links a .material-symbols-outlined {
+  display: none;
+}
+
+.nav-links a:hover, 
+.nav-links a.active {
+  color: var(--accent-color);
+}
+
+.gallery-container {
+  padding: 2rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.pad {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 1.25rem 1rem;
+  box-shadow: var(--card-shadow);
+  border: var(--card-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.pad:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-hover-shadow);
+  border-color: rgba(236, 72, 153, 0.2);
+}
+
+.imagebox {
+  width: 100%;
+  aspect-ratio: 1 / 1.3;
+  overflow: hidden;
+  border-radius: calc(var(--border-radius) - 4px);
+  background-color: #000;
+}
+
+.imagebox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  transition: var(--transition);
+}
+
+.pad:hover .imagebox img {
+  transform: scale(1.05);
+}
+
+.pad h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pad h3:has(span) {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.pad h3 span {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.pad a {
+  display: inline-block;
+  text-decoration: none;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  transition: var(--transition);
+  margin-top: auto;
+  align-self: center; 
+}
+
+.pad a:hover {
+  background-color: var(--accent-hover);
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.45);
+}
+
+/* ADD BOX */
+   
+.add-box {
+  border: 2px dashed var(--border-dashed);
+  background-color: transparent;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: none;
+  display: flex;      
+  flex-direction: column;   
+}
+
+.add-box:hover {
+  border-color: var(--accent-color);
+  background-color: rgba(236, 72, 153, 0.04);
+}
+
+.plus-icon {
+  font-size: 3rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1;
+  transition: var(--transition);
+}
+
+.add-box:hover .plus-icon {
+  color: var(--accent-color);
+  transform: scale(1.1);
+}
+
+.add-box h3 {
+  color: var(--text-muted);
+}
+
+.add-box:hover h3 {
+  color: var(--text-color);
+}
+
+.view-panel {
+  display: none;
+  width: 100%;
+  padding: 15px;
+}
+
+.view-panel.active-view {
+  display: block;
+}
+
+.placeholder-view {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 2000;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  border: var(--card-border);
+}
+
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-color);
+}
+
+.form-group input {
+  padding: 10px;
+  background-color: rgba(11, 7, 18, 0.4);
+  border: var(--card-border);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text-color);
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: var(--accent-color);
+}
+
+.file-upload-label {
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px dashed var(--border-dashed);
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.file-upload-label:hover {
+  border-color: var(--accent-color);
+  color: var(--text-color);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-actions button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary { 
+  background: var(--accent-color); 
+  color: white; 
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-secondary { 
+  background: rgba(255, 255, 255, 0.08); 
+  color: var(--text-color); 
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15); 
+}
+
+/* BILL SPLITTER SYSTEM */
+.splitter-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+.name-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.name-input-row input { 
+  flex: 1; 
+}
+
+.name-input-row button {
+  padding: 0 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.names-list {
+  list-style: none;
+  padding: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.names-list li {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--card-border);
+  padding: 6px 12px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  align-items: center;
+  color: var(--text-color);
+}
+
+.names-list li button {
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.result-card {
+  background: rgba(236, 72, 153, 0.05);
+  border-left: 4px solid var(--accent-color);
+  padding: 20px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.result-card h1 { 
+  color: var(--accent-color); 
+  margin: 10px 0 0 0; 
+}
+
+/* CALCULATOR*/
+.calc-wrapper {
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 1.75rem;
+  box-shadow: var(--card-shadow);
+  border: var(--card-border);
+  transition: var(--transition);
+  margin: 2rem auto; 
+}
+
+.calc-wrapper:hover {
+  box-shadow: var(--card-hover-shadow);
+  border-color: rgba(236, 72, 153, 0.25);
+}
+
+.display-panel {
+  width: 100%;
+  background-color: rgba(11, 7, 18, 0.4);
+  border-radius: calc(var(--border-radius) - 4px);
+  padding: 1.5rem 1.25rem;
+  border: var(--card-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  min-height: 140px;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.formula-line {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: right;
+  letter-spacing: 0.5px;
+}
+
+.output-line {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: right;
+  outline: none;
+  pointer-events: none;
+  letter-spacing: -0.5px;
+}
+
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.keypad-grid button {
+  border: var(--card-border);
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-color);
+  border-radius: 16px;
+  aspect-ratio: 1 / 1;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+
+.keypad-grid button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.keypad-grid button:active {
+  transform: scale(0.92);
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.keypad-grid button.operator-key {
+  color: var(--accent-color);
+  background-color: rgba(236, 72, 153, 0.04);
+  font-size: 1.5rem;
+}
+
+.keypad-grid button.operator-key:hover {
+  background-color: rgba(236, 72, 153, 0.1);
+}
+
+.keypad-grid button.utility-key {
+  border: 1px dashed var(--border-dashed);
+  color: var(--text-muted);
+}
+
+.keypad-grid button.utility-key:hover {
+  border-color: var(--accent-color);
+  color: var(--text-color);
+}
+
+.keypad-grid button.execution-key {
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
+  border: none;
+}
+
+.keypad-grid button.execution-key:hover {
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.45);
+}
+
+@media (max-width: 768px) {
+  .navbar { 
+    position: fixed; 
+    top: 0; 
+    bottom: auto; 
+    left: 0; 
+    width: 100%; 
+    padding: 1rem 1.25rem; 
+    background-color: var(--card-bg);
+    border-bottom: var(--card-border); 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); 
+    z-index: 2000; 
+    display: flex; 
+    justify-content: flex-start; 
+    align-items: center; 
+  } 
+  
+  .nav-logo { 
+    display: block !important; 
+    font-size: 1.3rem; 
+    letter-spacing: 0.5px; 
+    margin-right: 0; 
+  }
+
+  .nav-links {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #110c1c; 
+    border-top: var(--card-border);
+    padding: 0.5rem 1rem;
+    justify-content: space-around;
+    gap: 0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+  }
+
+  .nav-links a {
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.5rem;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .nav-links a .material-symbols-outlined {
+    display: inline-block;
+    font-size: 1.5rem;
+  }
+
+  .gallery-container {
+    padding: 5.5rem 1rem 6.5rem 1rem; 
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .pad {
+    display: grid;
+    grid-template-columns: auto 1fr auto; 
+    grid-template-rows: auto auto;
+    align-items: center;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    gap: 0 1rem;
+  }
+
+  .imagebox {
+    grid-row: 1 / span 2;
+    grid-column: 1;
+    width: 60px;
+    height: 60px;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+  }
+
+  .pad h3:not(:has(span)) {
+    grid-row: 1;
+    grid-column: 2;
+    font-size: 0.95rem;
+    margin-bottom: 0.15rem;
+    align-self: end;
+  }
+
+  .pad h3:has(span) {
+    grid-row: 2;
+    grid-column: 2;
+    font-size: 0.85rem;
+    align-self: start;
+  }
+
+  .pad a {
+    grid-row: 1 / span 2;
+    grid-column: 3;
+    margin: 0;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    align-self: center;
+  }
+
+  .add-box {
+    position: fixed;
+    bottom: 4.5rem;
+    right: 1.25rem;
+    width: 56px;
+    height: 56px;
+    min-height: 56px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    border: none;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.45);
+    z-index: 2001; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1 / 1;
+  }
+
+  .add-box:active {
+    transform: scale(0.9);
+    background-color: var(--accent-hover);
+  }
+
+  .plus-icon {
+    font-size: 2rem;
+    font-weight: 400;
+    color: #ffffff;
+    margin-bottom: 7px;
+  }
+
+  .add-box h3 {
+    display: none;
+  }
+
+  .calc-wrapper {
+    max-width: 100%;
+    padding: 1rem 0.25rem;
+    box-shadow: none;
+    background-color: transparent;
+    border: none;
+    margin: 0;
+  }
+
+  .display-panel {
+    min-height: 150px;
+    background-color: transparent;
+    border: none;
+    padding-right: 0;
+  }
+
+  .keypad-grid button {
+    border-radius: 20px;
+    font-size: 1.4rem;
+  }
+
+   .splitter-container { 
+    margin: 5.5rem auto 6.5rem auto;
+    grid-template-columns: 1fr;      
+    width: 95%;
+    padding: 16px;
+  }
+}
+
+
+// --- DOM ELEMENT REFERENCES ---
+const tabs = document.querySelectorAll('.nav-tab');
+const views = document.querySelectorAll('.view-panel');
+const gallery = document.getElementById('gallery');
+const addBtn = document.getElementById('addBtn');
+const formModal = document.getElementById('formModal');
+const cancelModalBtn = document.getElementById('cancelModalBtn');
+const galleryForm = document.getElementById('galleryForm');
+const fileInput = document.getElementById('fileInput');
+const fileLabel = document.getElementById('fileLabel');
+
+// Calculator Elements
+const calcScreen = document.getElementById('calc-screen');
+const formulaCache = document.getElementById('formula-cache');
+const calcToSplitterBtn = document.getElementById('calc-to-splitter-btn');
+
+// Splitter Elements
+const splitTotalInput = document.getElementById('split-total');
+const personNameInput = document.getElementById('person-name');
+const personUpiInput = document.getElementById('person-upi');
+const addPersonBtn = document.getElementById('add-person-btn');
+const namesDisplayList = document.getElementById('names-display-list');
+const itemTitleInput = document.getElementById('shopping-item-title');
+const itemCostInput = document.getElementById('shopping-item-cost');
+const addItemBtn = document.getElementById('add-item-btn');
+const itemsBreakdownList = document.getElementById('items-breakdown-list');
+const perHeadSharesDisplay = document.getElementById('per-head-shares');
+const upiLinksContainer = document.getElementById('upi-links-container');
+
+// --- STATE MANAGEMENT ---
+let currentFormula = "";
+let peopleList = []; // Array of objects: { id, name, upi, manualAmount, mode: 'auto'|'manual' }
+let itemsList = [];   // Array of objects: { title, cost }
+
+// --- 1. VIEWS NAVIGATION CONTROLLER ---
+tabs.forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = tab.getAttribute('data-target');
+    
+    tabs.forEach(t => t.classList.remove('active'));
+    views.forEach(v => v.classList.remove('active-view'));
+    
+    tab.classList.add('active');
+    document.getElementById(target).classList.add('active-view');
+  });
+});
+
+// --- 2. RECEIPT VAULT MODULE ---
+// Open Modal
+addBtn.addEventListener('click', () => formModal.classList.add('active'));
+// Close Modal
+cancelModalBtn.addEventListener('click', () => {
+  formModal.classList.remove('active');
+  galleryForm.reset();
+  fileLabel.innerHTML = `<span class="material-symbols-outlined">upload</span> Snap / Select Bill Photo`;
+});
+
+// Show selected filename
+fileInput.addEventListener('change', () => {
+  if(fileInput.files.length > 0) {
+    fileLabel.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${fileInput.files[0].name}`;
+  }
+});
+
+// Form Submission (Add item to gallery vault)
+galleryForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const storeName = document.getElementById('modalItemName').value;
+  const billCost = document.getElementById('modalItemPrice').value;
+  
+  // Handle local image file fallback representation
+  const file = fileInput.files[0];
+  let imageSrc = "https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?q=80&w=400"; // default placeholder
+  
+  if (file) {
+    imageSrc = URL.createObjectURL(file);
+  }
+
+  const newPad = document.createElement('div');
+  newPad.className = 'pad';
+  newPad.innerHTML = `
+    <div class="imagebox">
+      <img src="${imageSrc}" alt="${storeName}" />
+    </div>
+    <h3>${storeName}</h3>
+    <h3>₹ <span>${parseFloat(billCost).toLocaleString('en-IN')}</span></h3>
+    <a href="#" class="send-vault-to-splitter" data-amount="${billCost}">Split This Bill</a>
+  `;
+
+  // Insert before the upload action grid box
+  gallery.insertBefore(newPad, addBtn);
+  
+  // Close and flush fields
+  cancelModalBtn.click();
+});
+
+// Event Delegation for dynamically added Vault Split Links
+gallery.addEventListener('click', (e) => {
+  if(e.target.classList.contains('send-vault-to-splitter')) {
+    e.preventDefault();
+    const targetAmount = e.target.getAttribute('data-amount');
+    transferToSplitter(targetAmount);
+  }
+});
+
+
+// --- 3. CALCULATOR ENGINE LOGIC ---
+function registerInput(val) {
+  if (calcScreen.value === "0" && val !== ".") {
+    calcScreen.value = val;
+  } else {
+    calcScreen.value += val;
+  }
+  currentFormula += val;
+}
+
+function flushEngine() {
+  calcScreen.value = "0";
+  formulaCache.innerText = "";
+  currentFormula = "";
+}
+
+function popLastEntry() {
+  if(calcScreen.value.length > 1) {
+    calcScreen.value = calcScreen.value.slice(0, -1);
+  } else {
+    calcScreen.value = "0";
+  }
+}
+
+function applyPercentage() {
+  try {
+    let expression = calcScreen.value;
+    // Simple conversion logic for UI handling
+    let calculated = eval(expression.replace(/×/g, '*').replace(/÷/g, '/')) / 100;
+    calcScreen.value = calculated;
+  } catch(err) {
+    calcScreen.value = "Error";
+  }
+}
+
+function executeEvaluation() {
+  try {
+    let mathExpression = calcScreen.value;
+    // Map visual UI operators to raw mathematical code
+    mathExpression = mathExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+    formulaCache.innerText = calcScreen.value + " =";
+    let finalOutput = eval(mathExpression);
+    calcScreen.value = Number(finalOutput.toFixed(2));
+  } catch (error) {
+    calcScreen.value = "Error";
+  }
+}
+
+// Transfer from calculator view to splitter section
+calcToSplitterBtn.addEventListener('click', () => {
+  executeEvaluation();
+  const calculatedTotal = calcScreen.value;
+  if(calculatedTotal !== "Error" && parseFloat(calculatedTotal) > 0) {
+    transferToSplitter(calculatedTotal);
+  }
+});
+
+function transferToSplitter(amount) {
+  splitTotalInput.value = parseFloat(amount);
+  // Redirect view tab
+  const targetTab = document.querySelector('[data-target="splitter-view"]');
+  if(targetTab) targetTab.click();
+  calculateSplit();
+}
+
+
+// --- 4. ADVANCED BILL SPLITTER ENGINE (AUTO/MANUAL & UPI LINK GENERATION) ---
+
+// Real-time tracking of overall total input changes
+splitTotalInput.addEventListener('input', calculateSplit);
+
+// Add Person Event Linkage
+addPersonBtn.addEventListener('click', () => {
+  const name = personNameInput.value.trim();
+  const upi = personUpiInput.value.trim() || "example@upi"; // fallback
+  
+  if(!name) {
+    alert("Please enter a person's name.");
+    return;
+  }
+
+  const person = {
+    id: Date.now() + Math.random(),
+    name: name,
+    upi: upi,
+    manualAmount: 0,
+    mode: 'auto' // baseline default setting
+  };
+
+  peopleList.push(person);
+  personNameInput.value = "";
+  personUpiInput.value = "";
+  
+  renderPeopleList();
+  calculateSplit();
+});
+
+// Add Individual Shopping Item
+addItemBtn.addEventListener('click', () => {
+  const title = itemTitleInput.value.trim();
+  const cost = parseFloat(itemCostInput.value);
+
+  if(!title || isNaN(cost) || cost <= 0) {
+    alert("Please enter a valid shopping item name and price.");
+    return;
+  }
+
+  itemsList.push({ title, cost });
+  
+  // Auto-accumulate item costs into total bill placeholder if blank/zero
+  let currentlySetTotal = parseFloat(splitTotalInput.value) || 0;
+  splitTotalInput.value = currentlySetTotal + cost;
+
+  itemTitleInput.value = "";
+  itemCostInput.value = "";
+
+  renderItemsList();
+  calculateSplit();
+});
+
+// Render the operational domestic list profiles
+function renderPeopleList() {
+  namesDisplayList.innerHTML = "";
+  
+  peopleList.forEach(person => {
+    const li = document.createElement('li');
+    li.style.display = "flex";
+    li.style.alignItems = "center";
+    li.style.justifyContent = "space-between";
+    li.style.background = "#f4f4f5";
+    li.style.padding = "8px 12px";
+    li.style.borderRadius = "6px";
+    li.style.marginBottom = "5px";
+
+    const nameSpan = document.createElement('span');
+    nameSpan.innerHTML = `<strong>${person.name}</strong> <small style="color:#666;">(${person.upi})</small>`;
+
+    // Mode Controller Layout
+    const controllerDiv = document.createElement('div');
+    controllerDiv.style.display = "flex";
+    controllerDiv.style.alignItems = "center";
+    controllerDiv.style.gap = "8px";
+
+    // Mode Toggle Button
+    const modeBtn = document.createElement('button');
+    modeBtn.type = "button";
+    modeBtn.innerText = person.mode === 'auto' ? "Auto Split" : "Manual Split";
+    modeBtn.style.fontSize = "0.75rem";
+    modeBtn.style.padding = "4px 8px";
+    modeBtn.style.background = person.mode === 'auto' ? "#22c55e" : "#eab308";
+    modeBtn.style.color = "white";
+    modeBtn.style.border = "none";
+    modeBtn.style.borderRadius = "4px";
+    modeBtn.style.cursor = "pointer";
+    
+    // Manual Input field box
+    const manualInput = document.createElement('input');
+    manualInput.type = "number";
+    manualInput.placeholder = "₹ Box";
+    manualInput.value = person.manualAmount || "";
+    manualInput.style.width = "70px";
+    manualInput.style.padding = "2px 4px";
+    manualInput.style.display = person.mode === 'manual' ? "block" : "none";
+
+    // Delete Button
+    const delBtn = document.createElement('button');
+    delBtn.innerHTML = "&times;";
+    delBtn.style.background = "none";
+    delBtn.style.color = "red";
+    delBtn.style.border = "none";
+    delBtn.style.fontWeight = "bold";
+    delBtn.style.cursor = "pointer";
+    delBtn.style.fontSize = "1.2rem";
+
+    // Event Wireups
+    modeBtn.addEventListener('click', () => {
+      person.mode = person.mode === 'auto' ? 'manual' : 'auto';
+      renderPeopleList();
+      calculateSplit();
+    });
+
+    manualInput.addEventListener('input', (e) => {
+      person.manualAmount = parseFloat(e.target.value) || 0;
+      calculateSplit();
+    });
+
+    delBtn.addEventListener('click', () => {
+      peopleList = peopleList.filter(p => p.id !== person.id);
+      renderPeopleList();
+      calculateSplit();
+    });
+
+    controllerDiv.appendChild(modeBtn);
+    controllerDiv.appendChild(manualInput);
+    controllerDiv.appendChild(delBtn);
+    
+    li.appendChild(nameSpan);
+    li.appendChild(controllerDiv);
+    namesDisplayList.appendChild(li);
+  });
+}
+
+function renderItemsList() {
+  itemsBreakdownList.innerHTML = "";
+  itemsList.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${item.title}</span> — <strong>₹${item.cost.toFixed(2)}</strong>`;
+    itemsBreakdownList.appendChild(li);
+  });
+}
+
+// Core Engine Split Calculation Loop
+function calculateSplit() {
+  const baseTotal = parseFloat(splitTotalInput.value) || 0;
+  
+  if (peopleList.length === 0) {
+    perHeadSharesDisplay.innerText = "0.00";
+    upiLinksContainer.innerHTML = '<p style="font-size:0.9rem; color:#777;">Add group names or items to view payment shortcuts.</p>';
+    return;
+  }
+
+  // Calculate allocated slices for manual participants
+  let manualTotal = 0;
+  let autoCount = 0;
+
+  peopleList.forEach(p => {
+    if (p.mode === 'manual') {
+      manualTotal += p.manualAmount;
+    } else {
+      autoCount++;
+    }
+  });
+
+  // Balanced target pool remaining for auto mode distributions
+  let remainingPool = baseTotal - manualTotal;
+  if(remainingPool < 0) remainingPool = 0; 
+
+  let autoSharePerHead = autoCount > 0 ? (remainingPool / autoCount) : 0;
+  
+  // Visual base display setup representing baseline auto dynamic variable split 
+  perHeadSharesDisplay.innerText = autoSharePerHead > 0 ? autoSharePerHead.toFixed(2) : (baseTotal / peopleList.length).toFixed(2);
+
+  // Clear previous link states
+  upiLinksContainer.innerHTML = "";
+
+  // Generate customized breakdown list with deep linking integration hooks
+  peopleList.forEach(p => {
+    const shareAmount = p.mode === 'manual' ? p.manualAmount : autoSharePerHead;
+    
+    if (shareAmount > 0) {
+      const linkRow = document.createElement('div');
+      linkRow.style.display = "flex";
+      linkRow.style.justifyContent = "space-between";
+      linkRow.style.alignItems = "center";
+      linkRow.style.background = "#fff";
+      linkRow.style.border = "1px solid #eee";
+      linkRow.style.padding = "10px";
+      linkRow.style.borderRadius = "6px";
+      linkRow.style.marginBottom = "8px";
+
+      const infoText = document.createElement('span');
+      infoText.innerHTML = `🏁 <strong>${p.name}</strong> owes <strong>₹${shareAmount.toFixed(2)}</strong>`;
+
+      // Standard Intent UPI Deep Link String Construction
+      // This launches phone native deep linked engines (GPay, PhonePe, Paytm)
+      const upiString = `upi://pay?pa=${encodeURIComponent(p.upi)}&pn=${encodeURIComponent(p.name)}&am=${shareAmount.toFixed(2)}&cu=INR&tn=RupeeSplit%20Settle`;
+
+      const actionBtn = document.createElement('a');
+      actionBtn.href = upiString;
+      actionBtn.className = "send-money-btn";
+      actionBtn.innerText = "Send Pay Link";
+      actionBtn.style.textDecoration = "none";
+      actionBtn.style.background = "#4f46e5";
+      actionBtn.style.color = "white";
+      actionBtn.style.padding = "6px 12px";
+      actionBtn.style.borderRadius = "4px";
+      actionBtn.style.fontSize = "0.85rem";
+      actionBtn.style.fontWeight = "bold";
+
+      linkRow.appendChild(infoText);
+      linkRow.appendChild(actionBtn);
+      upiLinksContainer.appendChild(linkRow);
+    }
+  });
+}
