@@ -1,361 +1,318 @@
- 
+(function () {
+  "use strict";
 
-const tabs = document.querySelectorAll('.nav-tab');
-const views = document.querySelectorAll('.view-panel');
-const gallery = document.getElementById('gallery');
-const addBtn = document.getElementById('addBtn');
-const formModal = document.getElementById('formModal');
-const cancelModalBtn = document.getElementById('cancelModalBtn');
-const galleryForm = document.getElementById('galleryForm');
-const fileInput = document.getElementById('fileInput');
-const fileLabel = document.getElementById('fileLabel');
-
-const calcScreen = document.getElementById('calc-screen');
-const formulaCache = document.getElementById('formula-cache');
-const calcToSplitterBtn = document.getElementById('calc-to-splitter-btn');
-
-const splitTotalInput = document.getElementById('split-total');
-const personNameInput = document.getElementById('person-name');
-const personUpiInput = document.getElementById('person-upi');
-const addPersonBtn = document.getElementById('add-person-btn');
-const namesDisplayList = document.getElementById('names-display-list');
-const itemTitleInput = document.getElementById('shopping-item-title');
-const itemCostInput = document.getElementById('shopping-item-cost');
-const addItemBtn = document.getElementById('add-item-btn');
-const itemsBreakdownList = document.getElementById('items-breakdown-list');
-const perHeadSharesDisplay = document.getElementById('per-head-shares');
-const upiLinksContainer = document.getElementById('upi-links-container');
-
-let currentFormula = "";
-let peopleList = []; // Array of objects: { id, name, upi, manualAmount, mode: 'auto'|'manual' }
-let itemsList = [];   // Array of objects: { title, cost }
-
-// 1. VIEWS NAVIGATION CONTROLLER
-tabs.forEach(tab => {
-  tab.addEventListener('click', (e) => {
-    e.preventDefault();
-    const target = tab.getAttribute('data-target');
-    
-    tabs.forEach(t => t.classList.remove('active'));
-    views.forEach(v => v.classList.remove('active-view'));
-    
-    tab.classList.add('active');
-    document.getElementById(target).classList.add('active-view');
-  });
-});
-
-//2. RECEIPT VAULT MODULE
-addBtn.addEventListener('click', () => formModal.classList.add('active'));
-cancelModalBtn.addEventListener('click', () => {
-  formModal.classList.remove('active');
-  galleryForm.reset();
-  fileLabel.innerHTML = `<span class="material-symbols-outlined">upload</span> Snap / Select Bill Photo`;
-});
-
-fileInput.addEventListener('change', () => {
-  if(fileInput.files.length > 0) {
-    fileLabel.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${fileInput.files[0].name}`;
-  }
-});
-
-galleryForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const storeName = document.getElementById('modalItemName').value;
-  const billCost = document.getElementById('modalItemPrice').value;
-  
-  const file = fileInput.files[0];
-  let imageSrc = "https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?q=80&w=400"; // default placeholder
-  
-  if (file) {
-    imageSrc = URL.createObjectURL(file);
-  }
-
-  const newPad = document.createElement('div');
-  newPad.className = 'pad';
-  newPad.innerHTML = `
-    <div class="imagebox">
-      <img src="${imageSrc}" alt="${storeName}" />
-    </div>
-    <h3>${storeName}</h3>
-    <h3>₹ <span>${parseFloat(billCost).toLocaleString('en-IN')}</span></h3>
-    <a href="#" class="send-vault-to-splitter" data-amount="${billCost}">Split This Bill</a>
-  `;
-
-  gallery.insertBefore(newPad, addBtn);
-  
-  cancelModalBtn.click();
-});
-
-gallery.addEventListener('click', (e) => {
-  if(e.target.classList.contains('send-vault-to-splitter')) {
-    e.preventDefault();
-    const targetAmount = e.target.getAttribute('data-amount');
-    transferToSplitter(targetAmount);
-  }
-});
-
-
-//  CALCULATOR 
-function registerInput(val) {
-  if (calcScreen.value === "0" && val !== ".") {
-    calcScreen.value = val;
-  } else {
-    calcScreen.value += val;
-  }
-  currentFormula += val;
-}
-
-function flushEngine() {
-  calcScreen.value = "0";
-  formulaCache.innerText = "";
-  currentFormula = "";
-}
-
-function popLastEntry() {
-  if(calcScreen.value.length > 1) {
-    calcScreen.value = calcScreen.value.slice(0, -1);
-  } else {
-    calcScreen.value = "0";
-  }
-}
-
-function applyPercentage() {
-  try {
-    let expression = calcScreen.value;
-    let calculated = eval(expression.replace(/×/g, '*').replace(/÷/g, '/')) / 100;
-    calcScreen.value = calculated;
-  } catch(err) {
-    calcScreen.value = "Error";
-  }
-}
-
-function executeEvaluation() {
-  try {
-    let mathExpression = calcScreen.value;
-    mathExpression = mathExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
-    formulaCache.innerText = calcScreen.value + " =";
-    let finalOutput = eval(mathExpression);
-    calcScreen.value = Number(finalOutput.toFixed(2));
-  } catch (error) {
-    calcScreen.value = "Error";
-  }
-}
-
-calcToSplitterBtn.addEventListener('click', () => {
-  executeEvaluation();
-  const calculatedTotal = calcScreen.value;
-  if(calculatedTotal !== "Error" && parseFloat(calculatedTotal) > 0) {
-    transferToSplitter(calculatedTotal);
-  }
-});
-
-function transferToSplitter(amount) {
-  splitTotalInput.value = parseFloat(amount);
-  const targetTab = document.querySelector('[data-target="splitter-view"]');
-  if(targetTab) targetTab.click();
-  calculateSplit();
-}
-
-
-
-splitTotalInput.addEventListener('input', calculateSplit);
-
-addPersonBtn.addEventListener('click', () => {
-  const name = personNameInput.value.trim();
-  const upi = personUpiInput.value.trim() || "example@upi"; // fallback
-  
-  if(!name) {
-    alert("Please enter a person's name.");
-    return;
-  }
-
-  const person = {
-    id: Date.now() + Math.random(),
-    name: name,
-    upi: upi,
-    manualAmount: 0,
-    mode: 'auto' 
+  const AppState = {
+    activeViewId: "vault-view",
+    calculator: {
+      isResetPending: false
+    },
+    splitter: {
+      friendsPool: [], 
+      shoppingItems: [],
+      explicitBaseTotal: 0
+    },
+    garbageCache: new Set() 
   };
 
-  peopleList.push(person);
-  personNameInput.value = "";
-  personUpiInput.value = "";
-  
-  renderPeopleList();
-  calculateSplit();
-});
+  const DOM = {
+    tabs: document.querySelectorAll(".nav-tab"),
+    views: document.querySelectorAll(".view-panel"),
+    calcScreen: document.getElementById("calc-screen"),
+    formulaCache: document.getElementById("formula-cache"),
+    calcToSplitterBtn: document.getElementById("calc-to-splitter-btn"),
+    gallery: document.getElementById("gallery"),
+    addBtn: document.getElementById("addBtn"),
+    formModal: document.getElementById("formModal"),
+    cancelModalBtn: document.getElementById("cancelModalBtn"),
+    galleryForm: document.getElementById("galleryForm"),
+    fileInput: document.getElementById("fileInput"),
+    fileLabel: document.getElementById("fileLabel"),
+    splitTotal: document.getElementById("split-total"),
+    personName: document.getElementById("person-name"),
+    personUpi: document.getElementById("person-upi"),
+    addPersonBtn: document.getElementById("add-person-btn"),
+    namesDisplayList: document.getElementById("names-display-list"),
+    shoppingItemTitle: document.getElementById("shopping-item-title"),
+    shoppingItemCost: document.getElementById("shopping-item-cost"),
+    addItemBtn: document.getElementById("add-item-btn"),
+    itemsBreakdownList: document.getElementById("items-breakdown-list"),
+    perHeadShares: document.getElementById("per-head-shares"),
+    upiLinksContainer: document.getElementById("upi-links-container"),
+    themeToggle: document.getElementById("theme-toggle")
+  };
 
-addItemBtn.addEventListener('click', () => {
-  const title = itemTitleInput.value.trim();
-  const cost = parseFloat(itemCostInput.value);
+  document.addEventListener("DOMContentLoaded", () => {
+    initNavigationRouter();
+    initReceiptVault();
+    initCalculatorEngine();
+    initSplitterEngine();
+    initSystemThemes();
+  });
 
-  if(!title || isNaN(cost) || cost <= 0) {
-    alert("Please enter a valid shopping item name and price.");
-    return;
+  function initNavigationRouter() {
+    DOM.tabs.forEach((tab) => {
+      tab.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = tab.getAttribute("data-target");
+        executeTransitionToView(target);
+      });
+    });
   }
 
-  itemsList.push({ title, cost });
-  
-  let currentlySetTotal = parseFloat(splitTotalInput.value) || 0;
-  splitTotalInput.value = currentlySetTotal + cost;
-
-  itemTitleInput.value = "";
-  itemCostInput.value = "";
-
-  renderItemsList();
-  calculateSplit();
-});
-
-function renderPeopleList() {
-  namesDisplayList.innerHTML = "";
-  
-  peopleList.forEach(person => {
-    const li = document.createElement('li');
-    li.style.display = "flex";
-    li.style.alignItems = "center";
-    li.style.justifyContent = "space-between";
-    li.style.background = "#f4f4f5";
-    li.style.padding = "8px 12px";
-    li.style.borderRadius = "6px";
-    li.style.marginBottom = "5px";
-
-    const nameSpan = document.createElement('span');
-    nameSpan.innerHTML = `<strong>${person.name}</strong> <small style="color:#666;">(${person.upi})</small>`;
-
-    const controllerDiv = document.createElement('div');
-    controllerDiv.style.display = "flex";
-    controllerDiv.style.alignItems = "center";
-    controllerDiv.style.gap = "8px";
-
-    const modeBtn = document.createElement('button');
-    modeBtn.type = "button";
-    modeBtn.innerText = person.mode === 'auto' ? "Auto Split" : "Manual Split";
-    modeBtn.style.fontSize = "0.75rem";
-    modeBtn.style.padding = "4px 8px";
-    modeBtn.style.background = person.mode === 'auto' ? "#22c55e" : "#eab308";
-    modeBtn.style.color = "white";
-    modeBtn.style.border = "none";
-    modeBtn.style.borderRadius = "4px";
-    modeBtn.style.cursor = "pointer";
-    
-    const manualInput = document.createElement('input');
-    manualInput.type = "number";
-    manualInput.placeholder = "₹ Box";
-    manualInput.value = person.manualAmount || "";
-    manualInput.style.width = "70px";
-    manualInput.style.padding = "2px 4px";
-    manualInput.style.display = person.mode === 'manual' ? "block" : "none";
-
-    const delBtn = document.createElement('button');
-    delBtn.innerHTML = "&times;";
-    delBtn.style.background = "none";
-    delBtn.style.color = "red";
-    delBtn.style.border = "none";
-    delBtn.style.fontWeight = "bold";
-    delBtn.style.cursor = "pointer";
-    delBtn.style.fontSize = "1.2rem";
-
-    modeBtn.addEventListener('click', () => {
-      person.mode = person.mode === 'auto' ? 'manual' : 'auto';
-      renderPeopleList();
-      calculateSplit();
-    });
-
-    manualInput.addEventListener('input', (e) => {
-      person.manualAmount = parseFloat(e.target.value) || 0;
-      calculateSplit();
-    });
-
-    delBtn.addEventListener('click', () => {
-      peopleList = peopleList.filter(p => p.id !== person.id);
-      renderPeopleList();
-      calculateSplit();
-    });
-
-    controllerDiv.appendChild(modeBtn);
-    controllerDiv.appendChild(manualInput);
-    controllerDiv.appendChild(delBtn);
-    
-    li.appendChild(nameSpan);
-    li.appendChild(controllerDiv);
-    namesDisplayList.appendChild(li);
-  });
-}
-
-function renderItemsList() {
-  itemsBreakdownList.innerHTML = "";
-  itemsList.forEach((item, index) => {
-    const li = document.createElement('li');
-    li.innerHTML = `<span>${item.title}</span> — <strong>₹${item.cost.toFixed(2)}</strong>`;
-    itemsBreakdownList.appendChild(li);
-  });
-}
-
-function calculateSplit() {
-  const baseTotal = parseFloat(splitTotalInput.value) || 0;
-  
-  if (peopleList.length === 0) {
-    perHeadSharesDisplay.innerText = "0.00";
-    upiLinksContainer.innerHTML = '<p style="font-size:0.9rem; color:#777;">Add group names or items to view payment shortcuts.</p>';
-    return;
+  function executeTransitionToView(targetId) {
+    DOM.tabs.forEach((t) => t.classList.toggle("active", t.getAttribute("data-target") === targetId));
+    DOM.views.forEach((v) => v.classList.toggle("active-view", v.id === targetId));
+    AppState.activeViewId = targetId;
   }
 
-  let manualTotal = 0;
-  let autoCount = 0;
+  function initReceiptVault() {
+    DOM.gallery.addEventListener("click", (e) => {
+      const actionableAnchor = e.target.closest(".send-vault-to-splitter");
+      if (actionableAnchor) {
+        e.preventDefault();
+        const extractedValue = parseFloat(actionableAnchor.getAttribute("data-amount"));
+        if (!isNaN(extractedValue)) pipeValueDirectToSplitter(extractedValue);
+      }
+    });
 
-  peopleList.forEach(p => {
-    if (p.mode === 'manual') {
-      manualTotal += p.manualAmount;
-    } else {
-      autoCount++;
+    DOM.addBtn.addEventListener("click", () => DOM.formModal.style.display = "flex");
+    DOM.cancelModalBtn.addEventListener("click", closeVaultModal);
+    DOM.formModal.addEventListener("click", (e) => { if (e.target === DOM.formModal) closeVaultModal(); });
+
+    DOM.fileInput.addEventListener("change", (e) => {
+      if (e.target.files.length > 0) {
+        DOM.fileLabel.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${sanitizeHtml(e.target.files[0].name)}`;
+      }
+    });
+
+    DOM.galleryForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const storeTitle = DOM.galleryForm.modalItemName.value.trim();
+      const rawCost = parseFloat(DOM.galleryForm.modalItemPrice.value);
+      const targetFile = DOM.fileInput.files[0];
+
+      if (!storeTitle || isNaN(rawCost)) return;
+
+      let fileSourceUrl = "https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?q=80&w=400";
+      if (targetFile) {
+        fileSourceUrl = URL.createObjectURL(targetFile);
+        AppState.garbageCache.add(fileSourceUrl); 
+      }
+
+      const generatedPad = document.createElement("div");
+      generatedPad.className = "pad";
+      generatedPad.innerHTML = `
+        <div class="imagebox"><img src="${fileSourceUrl}" alt="${sanitizeHtml(storeTitle)}" loading="lazy" /></div>
+        <h3>${sanitizeHtml(storeTitle)}</h3>
+        <h3>₹ <span>${rawCost.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span></h3>
+        <a href="#" class="send-vault-to-splitter" data-amount="${rawCost}">Split This Bill</a>
+      `;
+
+      DOM.gallery.insertBefore(generatedPad, DOM.addBtn);
+      closeVaultModal();
+    });
+  }
+
+  function closeVaultModal() {
+    DOM.formModal.style.display = "none";
+    DOM.galleryForm.reset();
+    DOM.fileLabel.innerHTML = `<span class="material-symbols-outlined">upload</span> Snap / Select Bill Photo`;
+  }
+
+  function initCalculatorEngine() {
+    window.registerInput = (inputSymbol) => {
+      if (AppState.calculator.isResetPending && !["+", "-", "*", "/"].includes(inputSymbol)) {
+        DOM.calcScreen.value = "";
+      }
+      AppState.calculator.isResetPending = false;
+
+      if (DOM.calcScreen.value === "0" && inputSymbol !== ".") {
+        DOM.calcScreen.value = inputSymbol;
+      } else {
+        DOM.calcScreen.value += inputSymbol;
+      }
+    };
+
+    window.flushEngine = () => {
+      DOM.calcScreen.value = "0";
+      DOM.formulaCache.innerText = "";
+      AppState.calculator.isResetPending = false;
+    };
+
+    window.popLastEntry = () => {
+      const internalString = DOM.calcScreen.value;
+      DOM.calcScreen.value = internalString.length > 1 ? internalString.slice(0, -1) : "0";
+    };
+
+    window.applyPercentage = () => {
+      const scalarValue = parseFloat(DOM.calcScreen.value);
+      if (!isNaN(scalarValue)) {
+        DOM.calcScreen.value = financialSafeRound(scalarValue / 100).toString();
+      }
+    };
+
+    window.executeEvaluation = () => {
+      try {
+        const structuralExpression = DOM.calcScreen.value.replace(/×/g, "*").replace(/÷/g, "/");
+        if (!structuralExpression) return;
+
+        const evaluationOutput = Function(`"use strict"; return (${structuralExpression})`)();
+
+        if (evaluationOutput === Infinity || isNaN(evaluationOutput)) throw new Error("Faulty Operation");
+
+        DOM.formulaCache.innerText = `${DOM.calcScreen.value} =`;
+        DOM.calcScreen.value = financialSafeRound(evaluationOutput).toString();
+        AppState.calculator.isResetPending = true;
+      } catch {
+        DOM.calcScreen.value = "Error";
+      }
+    };
+
+    DOM.calcToSplitterBtn.addEventListener("click", () => {
+      if (!AppState.calculator.isResetPending) window.executeEvaluation();
+      const outputVal = parseFloat(DOM.calcScreen.value);
+      if (!isNaN(outputVal) && outputVal > 0) pipeValueDirectToSplitter(outputVal);
+    });
+  }
+
+  function pipeValueDirectToSplitter(finalNumericVal) {
+    DOM.splitTotal.value = financialSafeRound(finalNumericVal);
+    AppState.splitter.explicitBaseTotal = financialSafeRound(finalNumericVal);
+    syncAndRecalculateBalances();
+    executeTransitionToView("splitter-view");
+  }
+
+  function initSplitterEngine() {
+    DOM.splitTotal.addEventListener("input", () => {
+      AppState.splitter.explicitBaseTotal = parseFloat(DOM.splitTotal.value) || 0;
+      syncAndRecalculateBalances();
+    });
+
+    DOM.addPersonBtn.addEventListener("click", () => {
+      const explicitName = DOM.personName.value.trim();
+      const inputUpi = DOM.personUpi.value.trim();
+
+      if (!explicitName) return;
+
+      AppState.splitter.friendsPool.push({ id: crypto.randomUUID(), name: explicitName, upi: inputUpi });
+      DOM.personName.value = "";
+      DOM.personUpi.value = "";
+
+      refreshGroupListUI();
+      syncAndRecalculateBalances();
+    });
+
+    DOM.addItemBtn.addEventListener("click", () => {
+      const targetLabel = DOM.shoppingItemTitle.value.trim();
+      const nominalCost = parseFloat(DOM.shoppingItemCost.value);
+
+      if (!targetLabel || isNaN(nominalCost)) return;
+
+      AppState.splitter.shoppingItems.push({ id: crypto.randomUUID(), title: targetLabel, cost: nominalCost });
+      DOM.shoppingItemTitle.value = "";
+      DOM.shoppingItemCost.value = "";
+
+      refreshShoppingItemsUI();
+      syncAndRecalculateBalances();
+    });
+  }
+
+  function refreshGroupListUI() {
+    DOM.namesDisplayList.innerHTML = "";
+    AppState.splitter.friendsPool.forEach((friend) => {
+      const itemNode = document.createElement("li");
+      itemNode.className = "names-list-item"; 
+      itemNode.innerHTML = `
+        <span><strong>${sanitizeHtml(friend.name)}</strong> ${friend.upi ? `<small class="upi-text-mute">(${sanitizeHtml(friend.upi)})</small>` : ""}</span>
+        <span class="material-symbols-outlined removal-trigger">delete</span>
+      `;
+      itemNode.querySelector(".removal-trigger").addEventListener("click", () => {
+        AppState.splitter.friendsPool = AppState.splitter.friendsPool.filter((f) => f.id !== friend.id);
+        refreshGroupListUI();
+        syncAndRecalculateBalances();
+      });
+      DOM.namesDisplayList.appendChild(itemNode);
+    });
+  }
+
+  function refreshShoppingItemsUI() {
+    DOM.itemsBreakdownList.innerHTML = "";
+    AppState.splitter.shoppingItems.forEach((item) => {
+      const itemRow = document.createElement("li");
+      itemRow.className = "items-list-row";
+      itemRow.innerHTML = `
+        <div class="shopping-item-card">
+          <span>${sanitizeHtml(item.title)}</span>
+          <span class="shopping-price-display">₹ ${item.cost.toFixed(2)} &nbsp; <strong class="item-removal-trigger">&times;</strong></span>
+        </div>
+      `;
+      itemRow.querySelector(".item-removal-trigger").addEventListener("click", () => {
+        AppState.splitter.shoppingItems = AppState.splitter.shoppingItems.filter((i) => i.id !== item.id);
+        refreshShoppingItemsUI();
+        syncAndRecalculateBalances();
+      });
+      DOM.itemsBreakdownList.appendChild(itemRow);
+    });
+  }
+
+  function syncAndRecalculateBalances() {
+    const summationOfItems = AppState.splitter.shoppingItems.reduce((acc, item) => acc + item.cost, 0);
+    const operatingFinancialPool = AppState.splitter.explicitBaseTotal > 0 ? AppState.splitter.explicitBaseTotal : summationOfItems;
+    const individualCount = AppState.splitter.friendsPool.length;
+
+    if (individualCount === 0) {
+      DOM.perHeadShares.innerText = "0.00";
+      DOM.upiLinksContainer.innerHTML = `<p class="placeholder-text">Add group names or items to view payment shortcuts.</p>`;
+      return;
     }
+
+    const dividedShareAmount = financialSafeRound(operatingFinancialPool / individualCount);
+    DOM.perHeadShares.innerText = dividedShareAmount.toFixed(2);
+    DOM.upiLinksContainer.innerHTML = "";
+
+    AppState.splitter.friendsPool.forEach((friend) => {
+      const calibratedVpa = friend.upi ? friend.upi : `${friend.name.replace(/\s+/g, "").toLowerCase()}@upi`;
+      const structuredUpiString = `upi://pay?pa=${calibratedVpa}&pn=${encodeURIComponent(friend.name)}&am=${dividedShareAmount.toFixed(2)}&cu=INR`;
+
+      const paymentCardNode = document.createElement("div");
+      paymentCardNode.className = "payment-link-card"; 
+      paymentCardNode.innerHTML = `
+        <div class="payment-card-details">
+          <strong class="payment-card-name">${sanitizeHtml(friend.name)}</strong>
+          <small class="placeholder-text">Assigned Portion: ₹${dividedShareAmount.toFixed(2)}</small>
+        </div>
+        <a href="${structuredUpiString}" class="direct-pay-btn">
+          <span class="material-symbols-outlined">bolt</span> Direct Pay
+        </a>
+      `;
+      DOM.upiLinksContainer.appendChild(paymentCardNode);
+    });
+  }
+
+  function initSystemThemes() {
+    DOM.themeToggle.addEventListener("change", (e) => {
+      if (e.target.checked) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+    });
+  }
+
+  function financialSafeRound(targetNum) {
+    return Math.round((targetNum + Number.EPSILON) * 100) / 100;
+  }
+
+  function sanitizeHtml(dirtyString) {
+    return dirtyString
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  window.addEventListener("beforeunload", () => {
+    AppState.garbageCache.forEach((allocatedBlobUrl) => URL.revokeObjectURL(allocatedBlobUrl));
   });
-
-  let remainingPool = baseTotal - manualTotal;
-  if(remainingPool < 0) remainingPool = 0; 
-
-  let autoSharePerHead = autoCount > 0 ? (remainingPool / autoCount) : 0;
-  
-  perHeadSharesDisplay.innerText = autoSharePerHead > 0 ? autoSharePerHead.toFixed(2) : (baseTotal / peopleList.length).toFixed(2);
-
-  upiLinksContainer.innerHTML = "";
-
-  peopleList.forEach(p => {
-    const shareAmount = p.mode === 'manual' ? p.manualAmount : autoSharePerHead;
-    
-    if (shareAmount > 0) {
-      const linkRow = document.createElement('div');
-      linkRow.style.display = "flex";
-      linkRow.style.justifyContent = "space-between";
-      linkRow.style.alignItems = "center";
-      linkRow.style.background = "#fff";
-      linkRow.style.border = "1px solid #eee";
-      linkRow.style.padding = "10px";
-      linkRow.style.borderRadius = "6px";
-      linkRow.style.marginBottom = "8px";
-
-      const infoText = document.createElement('span');
-      infoText.innerHTML = `🏁 <strong>${p.name}</strong> owes <strong>₹${shareAmount.toFixed(2)}</strong>`;
-
-
-      const upiString = `upi://pay?pa=${encodeURIComponent(p.upi)}&pn=${encodeURIComponent(p.name)}&am=${shareAmount.toFixed(2)}&cu=INR&tn=RupeeSplit%20Settle`;
-
-      const actionBtn = document.createElement('a');
-      actionBtn.href = upiString;
-      actionBtn.className = "send-money-btn";
-      actionBtn.innerText = "Send Pay Link";
-      actionBtn.style.textDecoration = "none";
-      actionBtn.style.background = "#4f46e5";
-      actionBtn.style.color = "white";
-      actionBtn.style.padding = "6px 12px";
-      actionBtn.style.borderRadius = "4px";
-      actionBtn.style.fontSize = "0.85rem";
-      actionBtn.style.fontWeight = "bold";
-
-      linkRow.appendChild(infoText);
-      linkRow.appendChild(actionBtn);
-      upiLinksContainer.appendChild(linkRow);
-    }
-  });
-}
-
+})();

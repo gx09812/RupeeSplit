@@ -97,7 +97,7 @@
           <button class="execution-key" onclick="executeEvaluation()">=</button>
         </div>
         
-        <button id="calc-to-splitter-btn" style="width:100%; margin-top:15px; padding:12px; font-weight:bold; cursor:pointer;">
+        <button id="calc-to-splitter-btn" class="send-total-btn">
           Send Total Amount to Splitter ➔
         </button>
       </div>
@@ -115,38 +115,38 @@
 
           <div class="form-group">
             <label>Add Friends & UPI IDs</label>
-            <div style="display: flex; gap: 5px; margin-bottom: 5px;">
-              <input type="text" id="person-name" placeholder="Name (e.g. Amit)" style="flex:1;">
-              <input type="text" id="person-upi" placeholder="UPI ID (Optional)" style="flex:1;">
+            <div class="form-inline-row">
+              <input type="text" id="person-name" placeholder="Name (e.g. Amit)" class="flex-input">
+              <input type="text" id="person-upi" placeholder="UPI ID (Optional)" class="flex-input">
               <button type="button" id="add-person-btn">Add</button>
             </div>
-            <ul class="names-list" id="names-display-list" style="padding-left:0; list-style:none;"></ul>
+            <ul class="names-list" id="names-display-list"></ul>
           </div>
           
-          <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+          <hr class="divider-dashed">
 
           <div class="form-group">
             <label>Add Shopping Items Purchased</label>
-            <div style="display: flex; gap: 5px;">
-              <input type="text" id="shopping-item-title" placeholder="Item (e.g., Shoes)" style="flex:2;">
-              <input type="number" id="shopping-item-cost" placeholder="₹ Price" style="flex:1;">
+            <div class="form-inline-row">
+              <input type="text" id="shopping-item-title" placeholder="Item (e.g., Shoes)" class="flex-input-wide">
+              <input type="number" id="shopping-item-cost" placeholder="₹ Price" class="flex-input-narrow">
               <button type="button" id="add-item-btn">Add Item</button>
             </div>
-            <ul id="items-breakdown-list" style="margin-top:10px; padding-left:20px;"></ul>
+            <ul id="items-breakdown-list" class="items-list"></ul>
           </div>
         </div>
 
         <div class="splitter-result">
           <h3>Calculation Result</h3>
-          <div class="result-card" style="text-align: center; padding: 20px; border: 1px solid #ddd; border-radius:8px;">
+          <div class="result-card">
             <p>Splitted Split (Per Head Base)</p>
             <h1>₹ <span id="per-head-shares">0.00</span></h1>
           </div>
           
-          <div style="margin-top: 20px;">
+          <div class="settle-links-section">
             <h4>Instant Mobile Settle Links</h4>
             <div id="upi-links-container">
-               <p style="font-size:0.9rem; color:#777;">Add group names or items to view payment shortcuts.</p>
+               <p class="placeholder-text">Add group names or items to view payment shortcuts.</p>
             </div>
           </div>
         </div>
@@ -154,54 +154,54 @@
     </section>
 
     <section id="settings-view" class="view-panel">
-      <div class="settings-container" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div class="settings-container">
         <h2>Engine Settings</h2>
         
-        <div class="settings-card" style="background: var(--card-bg, #fff); border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="settings-card">
+          <div class="settings-row">
+            <div class="settings-detail">
               <span class="material-symbols-outlined">dark_mode</span>
               <div>
-                <strong style="display: block;">Night Mode</strong>
-                <span style="font-size: 0.85rem; color: #666;">Switch between day and night theme</span>
+                <strong class="setting-title">Night Mode</strong>
+                <span class="setting-desc">Switch between day and night theme</span>
               </div>
             </div>
             <div>
-              <label class="theme-switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
-                <input type="checkbox" id="theme-toggle" style="opacity: 0; width: 0; height: 0;">
-                <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+              <label class="switch-button">
+                <input type="checkbox" id="theme-toggle" class="switch-input">
+                <span class="switch-slider"></span>
               </label>
             </div>
           </div>
 
-          <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+          <hr class="divider-solid">
 
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="settings-row">
+            <div class="settings-detail">
               <span class="material-symbols-outlined">currency_exchange</span>
               <div>
-                <strong style="display: block;">Primary Currency</strong>
-                <span style="font-size: 0.85rem; color: #666;">Change default currency symbol</span>
+                <strong class="setting-title">Primary Currency</strong>
+                <span class="setting-desc">Change default currency symbol</span>
               </div>
             </div>
-            <select style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc;">
+            <select class="currency-select">
               <option value="INR">INR (₹)</option>
               <option value="USD">USD ($)</option>
               <option value="EUR">EUR (€)</option>
             </select>
           </div>
 
-          <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+          <hr class="divider-solid">
 
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="settings-row">
+            <div class="settings-detail">
               <span class="material-symbols-outlined">account_circle</span>
               <div>
-                <strong style="display: block;">Your UPI Profile</strong>
-                <span style="font-size: 0.85rem; color: #666;">Manage your default receiving VPA</span>
+                <strong class="setting-title">Your UPI Profile</strong>
+                <span class="setting-desc">Manage your default receiving VPA</span>
               </div>
             </div>
-            <button style="padding: 6px 12px; cursor: pointer; background: #eaeaea; border: none; border-radius: 4px;">Edit</button>
+            <button class="btn-edit">Edit</button>
           </div>
 
         </div>
@@ -223,12 +223,12 @@
           <input type="number" id="modalItemPrice" required placeholder="e.g., 850">
         </div>
         <div class="form-group">
-          <label class="file-upload-label" id="fileLabel" style="cursor:pointer; display:block; padding:15px; border:2px dashed #bbb; text-align:center;">
+          <label class="file-upload-label" id="fileLabel">
             <span class="material-symbols-outlined">upload</span> Snap / Select Bill Photo
           </label>
-          <input type="file" id="fileInput" accept="image/*" required style="display: none;" />
+          <input type="file" id="fileInput" accept="image/*" required />
         </div>
-        <div class="modal-actions" style="margin-top:15px; display:flex; justify-content:flex-end; gap:10px;">
+        <div class="modal-actions">
           <button type="button" class="btn-secondary" id="cancelModalBtn">Cancel</button>
           <button type="submit" class="btn-primary">Save to Vault</button>
         </div>
@@ -239,4 +239,3 @@
   <script src="script.js"></script>
 </body>
 </html>
- 
