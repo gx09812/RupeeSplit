@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<!-- ===== Top app bar (mobile) / persists on desktop too ===== -->
+
 <header class="app-bar">
   <div class="app-bar-brand">
     <span class="brand-mark">₹</span>
@@ -25,7 +25,7 @@
 
 <div class="app-shell">
 
-  <!-- ===== Desktop side rail (same items as bottom nav) ===== -->
+
   <nav class="side-rail" aria-label="Primary">
     <div class="rail-logo">₹<span>RupeeSplit</span></div>
     <ul class="rail-links">
@@ -37,9 +37,7 @@
     </ul>
   </nav>
 
-  <main class="main-content">
-
-    <!-- ===================== HOME ===================== -->
+  <main class="main-conte
     <section id="home-view" class="view-panel active-view">
       <div class="view-heading">
         <p class="eyebrow">Home</p>
@@ -52,12 +50,10 @@
           <span class="material-symbols-outlined">receipt_long</span>
           <h3>No receipts yet</h3>
           <p>Tap the + button to add your first bill.</p> 
-          <!-- if click the button go to SPLITTER-view  -->
+         
         </div>
       </div>
-    </section>
-
-    <!-- ===================== VAULT ===================== -->
+    </secti
     <section id="vault-view" class="view-panel">
       <div class="view-heading">
         <p class="eyebrow">Vault</p>
@@ -110,7 +106,7 @@
       </div>
     </section>
 
-    <!-- ===================== CALCULATOR ===================== -->
+
     <section id="calc-view" class="view-panel">
       <div class="view-heading">
         <p class="eyebrow">Calculator</p>
@@ -156,8 +152,6 @@
         </button>
       </div>
     </section>
-
-    <!-- ===================== SPLITTER ===================== -->
     <section id="splitter-view" class="view-panel">
       <div class="view-heading">
         <p class="eyebrow">Splitter</p>
@@ -212,8 +206,7 @@
               
             </div>
             <br>
-            <!-- or enter total amount split the person -->
-            <div class="form-group">
+                      <div class="form-group">
             <label for="split-total">Total amount (<span class="currency-label">₹</span>)</label>
             <input type="number" id="split-total" placeholder="e.g. 1500" min="0" inputmode="decimal">
             <small class="field-hint" id="total-auto-hint"></small>
@@ -246,7 +239,6 @@
       </div>
     </section>
 
-    <!-- ===================== SETTINGS ===================== -->
     <section id="settings-view" class="view-panel">
       <div class="view-heading">
         <p class="eyebrow">Settings</p>
@@ -303,7 +295,6 @@
   </main>
 </div>
 
-<!-- ===== Bottom nav (mobile, Android-style) ===== -->
 <nav class="bottom-nav" aria-label="Primary">
   <a href="#" class="nav-tab active" data-target="home-view"><span class="material-symbols-outlined">home</span><span>Home</span></a>
   <a href="#" class="nav-tab" data-target="vault-view"><span class="material-symbols-outlined">receipt_long</span><span>Vault</span></a>
@@ -312,7 +303,7 @@
   <a href="#" class="nav-tab" data-target="settings-view"><span class="material-symbols-outlined">settings</span><span>Settings</span></a>
 </nav>
 
-<!-- Home FAB (desktop / floating add-receipt) -->
+
 <button class="home-fab" id="addBtn" aria-label="Add receipt">
   <span class="material-symbols-outlined">add</span>
 </button>
@@ -369,8 +360,7 @@
 
 <div class="modal-overlay" id="detailDrawerModal">
   <div class="modal-content receipt-card">
-    <!-- edit and delete options -->
-    <div class="drawer-overlay" id="detailDrawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+   drawer-overlay" id="detailDrawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
   <div class="drawer-content receipt-card">
     
     <div class="drawer-header">
