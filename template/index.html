@@ -37,21 +37,76 @@
 
     <main class="main-content">
       
-      <section id="home-view" class="view-panel active-view">
-        <div class="view-heading">
-          <p class="eyebrow">Home</p>
-          <h1>Your gallery</h1>
-          <p class="sub">Snap a bill the moment you pay — sort out who owes what later.</p>
-        </div>
+<section id="home-view" class="view-panel active-view">
+  <div class="view-heading">
+    <p class="eyebrow">Home</p>
+    <h1>Your gallery</h1>
+    <p class="sub">Snap a bill the moment you pay — sort out who owes what later.</p>
+  </div>
 
-        <div class="gallery-container" id="gallery">
-          <div class="empty-state" id="galleryEmpty">
-            <span class="material-symbols-outlined">receipt_long</span>
-            <h3>No receipts yet</h3>
-            <p>Tap the + button to add your first bill.</p> 
-          </div>
-        </div>
-      </section>
+  <div class="gallery-container" id="gallery">
+    <!-- Empty State (Hidden when items exist) -->
+    <div class="empty-state" id="galleryEmpty" style="display: none;">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <h3>No receipts yet</h3>
+      <p>Tap the + button to add your first bill.</p> 
+    </div>
+
+    <!-- Demo Grid Container -->
+   <div class="demo-grid">
+      
+  <!-- Box 1: Unsettled Bill -->
+  <div class="bill-box card-pending">
+    <div class="bill-header">
+      <span class="material-symbols-outlined icon-status">pending</span>
+      <span class="bill-date">Today, 2:45 PM</span>
+    </div>
+    <div class="bill-body">
+      <h3>Zepto Run</h3>
+      <p class="bill-total">845</p>
+    </div>
+    <div class="bill-footer">
+      <span class="split-info">3 people splitting</span>
+      <span class="status-tag tag-pending">Owed ₹563</span>
+    </div>
+  </div>
+  <div class="bill-boder"></div>
+
+  <!-- Box 2: Settled Bill -->
+  <div class="bill-box card-settled">
+    <div class="bill-header">
+      <span class="material-symbols-outlined icon-status">check_circle</span>
+      <span class="bill-date">Yesterday</span>
+    </div>
+    <div class="bill-body">
+      <h3>Zara Outfit</h3>
+      <p class="bill-total">3,260</p>
+    </div>
+    <div class="bill-footer">
+      <span class="split-info">2 people splitting</span>
+      <span class="status-tag tag-settled">Settled</span>
+    </div>
+  </div>
+
+  <!-- Box 3: Draft Stage -->
+  <div class="bill-box card-draft">
+    <div class="bill-header">
+      <span class="material-symbols-outlined icon-status">edit_document</span>
+      <span class="bill-date">July 16</span>
+    </div>
+    <div class="bill-body">
+      <h3>Blinkit Grocery</h3>
+      <p class="bill-total">450</p>
+    </div>
+    <div class="bill-footer">
+      <span class="split-info">Not split yet</span>
+      <span class="status-tag tag-draft">Draft</span>
+    </div>
+  </div>
+
+</div>
+  </div>
+</section>
 
       <section id="vault-view" class="view-panel">
         <div class="view-heading">
@@ -215,15 +270,51 @@
               <button type="button" class="btn-secondary-full" id="openSharesModalBtn">Adjust individual shares</button>
             </div>
 
-            <div class="settle-links-section">
-              <div class="settle-links-header">
-                <h4>Settle up on UPI</h4>
-                <button type="button" class="btn-mini" id="copySummaryBtn"><span class="material-symbols-outlined">content_copy</span> Copy</button>
-              </div>
-              <div id="upi-links-container">
-                <p class="placeholder-text">Add friends to generate pay links for each person.</p>
-              </div>
-            </div>
+          <div class="settle-links-section">
+  <div class="settle-links-header">
+    <h4>Settle up on UPI</h4>
+    <button type="button" class="btn-mini" id="copySummaryBtn">
+      <span class="material-symbols-outlined">content_copy</span> Copy
+    </button>
+  </div>
+  
+  <div id="upi-links-container">
+    <!-- Splitter Row Example 1 -->
+    <div class="upi-pay-row">
+      <div class="upr-info">
+        <div class="upr-name">Rahul Sharma</div>
+        <div class="upr-upi">rahul@okhdfc</div>
+      </div>
+      <div class="upr-actions">
+        <span class="upr-amount">₹281.66</span>
+        <button type="button" class="upr-pay-btn">
+          <span class="material-symbols-outlined">bolt</span> Pay
+        </button>
+      </div>
+    </div>
+
+    <!-- Splitter Row Example 2 -->
+    <div class="upi-pay-row">
+      <div class="upr-info">
+        <div class="upr-name">Sneha Patel</div>
+        <div class="upr-upi">sneha@paytm</div>
+      </div>
+      <div class="upr-actions">
+        <span class="upr-amount">₹281.66</span>
+        <button type="button" class="upr-pay-btn">
+          <span class="material-symbols-outlined">bolt</span> Pay
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Actions Area -->
+    <div class="settle-actions">
+      <button type="button" class="btn-save-bill" id="save">
+        <span class="material-symbols-outlined">save</span> Save Bill Record
+      </button>
+    </div>
+  </div>
+</div>
           </div>
         </div>
       </section>
@@ -325,10 +416,15 @@
         <label class="modal-block-label">Select friend &amp; assign a share</label>
         <div class="form-inline-row">
           <select id="modal-friend-select" class="flex-input"><option value="">Choose a friend…</option></select>
-          <select id="modal-multiplier-select" class="flex-input-narrow">
-            <option value="1" selected>1× equal</option>
-            <option value="2">2×</option>
-            <option value="3">3×</option>
+          <input
+    type="number"
+    id="modal-multiplier-input"
+    class="flex-input-narrow"
+    min="1"
+    value="1"
+    placeholder="Weight"
+>
+            
           </select>
           <button type="button" id="modal-assign-btn" class="btn-icon-add" aria-label="Assign share"><span class="material-symbols-outlined">check</span></button>
         </div>
